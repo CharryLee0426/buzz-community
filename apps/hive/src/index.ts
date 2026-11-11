@@ -73,7 +73,12 @@ async function tick() {
 let timer: NodeJS.Timeout | undefined
 async function loop() {
   if (stopping) return
-  await tick()
+  try {
+    await tick()
+  } catch (error) {
+    // One bad pass must not end supervision: the next one runs regardless.
+    log.error({ err: error }, 'supervision pass failed')
+  }
   if (!stopping) timer = setTimeout(() => void loop(), config!.pollSeconds * 1000)
 }
 
