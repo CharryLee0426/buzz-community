@@ -9,7 +9,7 @@
     "sprig": "ghcr.io/block/buzz-sprig:sha-47674dc@sha256:db430909d37e7c9e9622bd299093f4d340c1f6b99524002395c699cc26c8bc85"
   },
   "github": {
-    "repo": null,
+    "repo": "CharryLee0426/buzz-community",
     "branch": "main"
   }
 }
