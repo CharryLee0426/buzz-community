@@ -1,0 +1,114 @@
+# Public entrypoint of the community. Railway terminates TLS at its edge and
+# forwards plain HTTP here; this file only routes by path:
+#
+#   /admin, /admin/*  -> operator console
+#   /pair             -> mobile pairing sidecar
+#   everything else   -> relay (WebSocket, NIP-11, REST, media, git, invites)
+{
+	admin off
+	auto_https off
+	persist_config off
+
+	log {
+		output stdout
+		format json {
+			message_key message
+			level_key level
+			level_format lower
+			time_key timestamp
+			time_format rfc3339
+		}
+	}
+
+	servers {
+		# Railway's edge is the only way in, and it overwrites X-Real-IP with
+		# the caller's address. Do not add a header a client could set itself.
+		trusted_proxies static 0.0.0.0/0 ::/0
+		client_ip_headers {$CLIENT_IP_HEADERS:X-Real-IP}
+	}
+}
+
+:{$PORT:8080} {
+	# One JSON line per request, in the shape Railway's Log Explorer parses.
+	# Headers are dropped (they carry signed auth events), and an invite code
+	# in the path is a bearer secret, so it is masked.
+	log {
+		output stdout
+		format filter {
+			wrap json {
+				message_key message
+				level_key level
+				level_format lower
+				time_key timestamp
+				time_format rfc3339
+			}
+			fields {
+				request>headers delete
+				request>tls delete
+				resp_headers delete
+				request>uri regexp "^/invite/[^/?]+" "/invite/[code]"
+			}
+		}
+	}
+
+	import snippets/{$GATEWAY_TRACING:tracing-off}.caddy
+
+	# Deploy-time health check from Railway.
+	@healthz path /healthz
+	handle @healthz {
+		log_skip
+		respond "ok" 200
+	}
+
+	# Relay surfaces meant for operators and the relay itself, never the internet.
+	@relay_private path /internal/* /operator/* /_mesh/* /_status /metrics
+	handle @relay_private {
+		respond 404
+	}
+
+	@admin path /admin /admin/*
+	handle @admin {
+		# The console is text: scripts, styles and JSON. The relay's own traffic
+		# is WebSocket frames and media, which gain nothing from this.
+		encode zstd gzip
+		reverse_proxy {$ADMIN_UPSTREAM} {
+			header_up X-Buzz-Client-IP {client_ip}
+			# The console answers while its backend restarts; fail fast instead of hanging.
+			transport http {
+				dial_timeout 5s
+				response_header_timeout 60s
+			}
+		}
+	}
+
+	handle /pair {
+		reverse_proxy {$PAIRING_UPSTREAM} {
+			transport http {
+				dial_timeout 5s
+			}
+		}
+	}
+
+	handle {
+		reverse_proxy {$RELAY_UPSTREAM} {
+			# The relay finds the community by Host, so every request names the
+			# canonical one whichever domain it arrived on.
+			header_up Host {$PUBLIC_HOST}
+			header_up X-Buzz-Client-IP {client_ip}
+			# Stream git and media bodies instead of buffering them.
+			flush_interval -1
+			transport http {
+				dial_timeout 5s
+			}
+		}
+	}
+
+	handle_errors {
+		@upstream_down expression `{err.status_code} in [502, 503, 504]`
+		handle @upstream_down {
+			header Retry-After 5
+			respond "The community is restarting. Retry in a few seconds." {err.status_code}
+		}
+		respond "{err.status_code} {err.status_text}" {err.status_code}
+	}
+}

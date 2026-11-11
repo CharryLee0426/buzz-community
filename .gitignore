@@ -1,0 +1,30 @@
+# dependencies and build output
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.vite/
+
+# local env and secrets: never commit
+.env
+.env.*
+!.env.example
+secrets/
+.secrets/
+*.nsec
+*.pem
+
+# Railway CLI link state is per-machine
+.railway/.linked
+.railway/*.local.*
+
+# local agent state
+.claude/settings.local.json
+agents/**/.state/
+
+# OS and editor
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

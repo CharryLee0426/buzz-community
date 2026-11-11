@@ -1,0 +1,16 @@
+packages:
+  - apps/admin/web
+  - apps/admin/server
+  - apps/hive
+
+# The Astryx postinstall scripts only print a setup hint; nothing needs to run.
+# esbuild's script fetches the platform binary that tsx uses in development.
+allowBuilds:
+  "@astryxdesign/cli": false
+  "@astryxdesign/core": false
+  esbuild: true
+  protobufjs: false
+
+# Astryx ships fixes often; do not hold its releases behind the release-age gate.
+minimumReleaseAgeExclude:
+  - "@astryxdesign/*"

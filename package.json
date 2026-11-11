@@ -1,0 +1,25 @@
+{
+  "name": "buzz-community",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A self-hosted Buzz community on Railway: relay, admin console, hosted agents, observability.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "setup": "node scripts/setup.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "dns": "node scripts/dns.mjs",
+    "verify": "node scripts/verify.mjs"
+  },
+  "devDependencies": {
+    "railway": "^3.16.0"
+  }
+}

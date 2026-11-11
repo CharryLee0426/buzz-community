@@ -1,0 +1,15 @@
+{
+  "$comment": "Non-secret settings for this community. Secrets never go here: scripts/setup.mjs generates them and stores them as Railway variables.",
+  "project": "buzz-community",
+  "domain": "buzz.chenli.dev",
+  "region": "sfo",
+  "bucketRegion": "sjc",
+  "images": {
+    "relay": "ghcr.io/block/buzz:sha-47674dc",
+    "sprig": "ghcr.io/block/buzz-sprig:sha-47674dc@sha256:db430909d37e7c9e9622bd299093f4d340c1f6b99524002395c699cc26c8bc85"
+  },
+  "github": {
+    "repo": null,
+    "branch": "main"
+  }
+}

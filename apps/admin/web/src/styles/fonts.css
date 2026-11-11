@@ -1,0 +1,10 @@
+/*
+ * Figtree, served from this origin. The neutral theme's own fonts.css pulls it
+ * from Google Fonts, which the console's Content-Security-Policy does not
+ * allow and which would tell a third party every time an operator signs in.
+ * vite.config.ts points the theme's import here.
+ */
+@import '@fontsource/figtree/400.css';
+@import '@fontsource/figtree/500.css';
+@import '@fontsource/figtree/600.css';
+@import '@fontsource/figtree/700.css';

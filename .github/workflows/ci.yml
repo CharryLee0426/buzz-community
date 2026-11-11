@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, lint, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - name: Check the setup scripts parse
+        run: for file in scripts/*.mjs scripts/lib/*.mjs; do node --check "$file"; done
+
+  images:
+    name: Build the images
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      # The gateway's Dockerfile runs `caddy validate`, so a bad Caddyfile fails here.
+      - run: docker build -f apps/gateway/Dockerfile -t gateway .
+      - run: docker build -f apps/admin/Dockerfile -t admin .
+      - run: docker build -f apps/hive/Dockerfile -t hive .

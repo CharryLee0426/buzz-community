@@ -1,0 +1,5 @@
+# Adds a gateway span to each trace and exports it to the collector named by
+# the OTEL_EXPORTER_OTLP_* variables Railway injects when tracing is enabled.
+tracing {
+	span gateway
+}

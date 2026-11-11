@@ -1,0 +1,2 @@
+# Gateway spans disabled. Railway's edge still records a span per request and
+# its traceparent header passes through to the services untouched.
