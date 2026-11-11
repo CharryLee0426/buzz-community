@@ -15,7 +15,7 @@ You need Node 24, the Railway CLI, a Railway account on a paid plan, and a domai
 
 ```sh
 pnpm install
-# edit community.config.json: project name, domain, region
+# edit community.config.json: project name, domain, region; set github.repo to null
 railway login && railway init --name <project>
 BUZZ_ADMIN_USERNAME=<you> BUZZ_ADMIN_PASSWORD=<12+ characters> node scripts/setup.mjs
 node scripts/deploy.mjs

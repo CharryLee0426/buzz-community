@@ -79,7 +79,7 @@ Edit `community.config.json`:
 | `region` | The Railway region for the services and databases. `sfo` (US West) is what this repository is deployed and tested with. See rule 3. |
 | `bucketRegion` | `sjc`, `iad`, `ams` or `sin`: the storage region closest to `region`. See rule 3. |
 | `images.relay`, `images.sprig` | Leave as they are. They pin the upstream relay and agent images that this repository was tested against. |
-| `github.repo` | Leave `null` for now. Step 8 covers deploying from GitHub. |
+| `github.repo` | Set it to `null`. A fresh clone still names the repository it was cloned from, which your Railway account cannot deploy. Step 8 covers pointing it at your own copy. |
 
 ## Step 2. Sign in to Railway and create the project
 
