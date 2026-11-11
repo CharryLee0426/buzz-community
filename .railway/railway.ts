@@ -213,7 +213,7 @@ export default defineRailway(() => {
   // under its own system user. Model credentials stay in this service and
   // reach providers through its local proxy, never through an agent's shell.
   const hive = service("hive", {
-    ...fromRepo("apps/hive/Dockerfile", ["apps/hive/**"]),
+    ...fromRepo("apps/hive/Dockerfile", ["apps/hive/**", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"]),
     replicas: oneReplica,
     healthcheck: "/healthz",
     healthcheckTimeout: 120,
